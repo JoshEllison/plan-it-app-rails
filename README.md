@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # README
 
 This README would normally document whatever steps are necessary to get the
@@ -22,3 +23,6 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+=======
+# plan-it-app-API
+>>>>>>> ce54a60b3af317668a566b8f3e82cfed77cae7c4
