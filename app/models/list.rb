@@ -1,21 +1,10 @@
 class List
-  # ==================================================
-  #                      SET UP
-  # ==================================================
-  # add attribute readers for instance accesss
-  attr_reader :id, :list, :completed
-
-  # connect to postgres
-  DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'list_development'})
-
-  #need to update list_development to correct name once started in psql
-
-  # initialize options hash
-  def initialize(opts = {}, id = nil)
-    @id = id.to_i
-    @list_item = opts["list_item"]
-    @completed = opts["completed"]
-  end
+    if(ENV['DATABASE_URL'])
+        uri = URI.parse(ENV['DATABASE_URL'])
+        DB = PG.connect(uri.hostname, uri.port, nil, nil, uri.path[1..-1], uri.user, uri.password)
+    else
+        DB = PG.connect(host: "localhost", port: 5432, dbname: 'simplerails')
+    end
 
   # ==================================================
   #                 PREPARED STATEMENTS
