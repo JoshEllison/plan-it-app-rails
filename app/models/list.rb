@@ -6,18 +6,18 @@ class List
   attr_reader :id, :list, :completed
 
 
-    if(ENV['DATABASE_URL'])
-        uri = URI.parse(ENV['DATABASE_URL'])
+    if(ENV['https://buckidea-api.herokuapp.com/'])
+        uri = URI.parse(ENV['https://buckidea-api.herokuapp.com/'])
         DB = PG.connect(uri.hostname, uri.port, nil, nil, uri.path[1..-1], uri.user, uri.password)
     else
-        DB = PG.connect(host: "localhost", port: 5432, dbname: 'simplerails')
+        DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'plan_it_app_api_development'})
     end
 
     #initialize options Hash
     def initialize(opts = {}, id = nil)
       @id = id.to_i
-      @list_item = opts["list_item"]
-      @completed = opts["completed"]
+      @title = opts["title"]
+      @iscomplete = opts["iscomplete"]
     end
 
 
@@ -36,9 +36,9 @@ class List
   # create task
   DB.prepare("create_list",
     <<-SQL
-      INSERT INTO tasks (list_item, completed)
+      INSERT INTO lists (title, iscomplete)
       VALUES ( $1, $2 )
-      RETURNING id, list_item, completed;
+      RETURNING id, title, iscomplete;
     SQL
   )
 
@@ -55,9 +55,9 @@ class List
   DB.prepare("update_list",
     <<-SQL
       UPDATE lists
-      SET list_item = $2, completed = $3
+      SET title = $2, iscomplete = $3
       WHERE id = $1
-      RETURNING id, list_item, completed;
+      RETURNING id, title, iscomplete;
     SQL
   )
 
@@ -69,13 +69,13 @@ class List
     results = DB.exec("SELECT * FROM lists;")
     return results.map do |result|
       # turn completed value into boolean
-      if result["completed"] === 'f'
-        result["completed"] = false
+      if result["iscomplete"] === 'f'
+        result["iscomplete"] = false
       else
-        result["completed"] = true
+        result["iscomplete"] = true
       end
       # create and return the lists
-      task = List.new(result, result["id"])
+      list = List.new(result, result["id"])
     end
   end
 
@@ -86,35 +86,35 @@ class List
     p result
     p '---'
     # turn completed value into boolean
-    if result["completed"] === 'f'
-      result["completed"] = false
+    if result["iscomplete"] === 'f'
+      result["iscomplete"] = false
     else
-      result["completed"] = true
+      result["iscomplete"] = true
     end
     p result
     # create and return the task
-    task = List.new(result, result["id"])
+    list = List.new(result, result["id"])
   end
 
   # create one
   def self.create(opts)
     # if opts["completed"] does not exist, default it to false
-    if opts["completed"] === nil
-      opts["completed"] = false
+    if opts["iscomplete"] === nil
+      opts["iscomplete"] = false
     end
     # create the task
-    results = DB.exec_prepared("create_list", [opts["list_item"], opts["completed"]])
+    results = DB.exec_prepared("create_list", [opts["title"], opts["iscomplete"]])
     # turn completed value into boolean
-    if results.first["completed"] === 'f'
-      completed = false
+    if results.first["iscomplete"] === 'f'
+      iscomplete = false
     else
-      completed = true
+      iscomplete = true
     end
     # return the task
-    task = List.new(
+    list = List.new(
       {
-        "list_item" => results.first["list_item"],
-        "completed" => completed
+        "title" => results.first["title"],
+        "iscomplete" => iscomplete
       },
       results.first["id"]
     )
@@ -135,19 +135,19 @@ class List
   # update one
   def self.update(id, opts)
     # update the list
-    results = DB.exec_prepared("update_list", [id, opts["list_item"], opts["completed"]])
+    results = DB.exec_prepared("update_list", [id, opts["title"], opts["iscomplete"]])
     # if results.first exists, it was successfully updated so return the updated list
     if results.first
-      if results.first["completed"] === 'f'
-        completed = false
+      if results.first["iscomplete"] === 'f'
+        iscomplete = false
       else
-        completed = true
+        iscomplete = true
       end
       # return the task
-      task = List.new(
+      list = List.new(
         {
-          "list_item" => results.first["list_item"],
-          "completed" => completed
+          "title" => results.first["title"],
+          "iscomplete" => iscomplete
         },
         results.first["id"]
       )
