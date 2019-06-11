@@ -3,7 +3,7 @@ class List
  #                      SET UP
  # ==================================================
  # add attribute readers for instance accesss
-  attr_reader :id, :title, :iscomplete
+  attr_reader :id, :title, :description, :iscomplete, :like
 
 
     if(ENV['DATABASE_URL'])
@@ -17,7 +17,9 @@ class List
     def initialize(opts = {}, id = nil)
       @id = id.to_i
       @title = opts["title"]
+      @description = opts["description"]
       @iscomplete = opts["iscomplete"]
+      @like = opts["like"].to_i
     end
 
 
