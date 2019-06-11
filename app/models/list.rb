@@ -3,8 +3,8 @@ class List
  #                      SET UP
  # ==================================================
  # add attribute readers for instance accesss
-  attr_reader :id, :title, :description, :iscomplete, :like
-
+  attr_reader :id, :title, :description, :iscomplete, :likes
+  # CREATE TABLE lists (id SERIAL, title VARCHAR(50), description VARCHAR(255), iscomplete BOOLEAN, likes INT);
 
     if(ENV['DATABASE_URL'])
         uri = URI.parse(ENV['DATABASE_URL'])
@@ -19,7 +19,7 @@ class List
       @title = opts["title"]
       @description = opts["description"]
       @iscomplete = opts["iscomplete"]
-      @like = opts["like"].to_i
+      @likes = opts["likes"].to_i
     end
 
 
