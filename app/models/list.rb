@@ -3,7 +3,7 @@ class List
  #                      SET UP
  # ==================================================
  # add attribute readers for instance accesss
-  attr_reader :id, :title, :description, :iscomplete, :likes
+  attr_reader :id, :title, :imageURL, :description, :iscomplete, :likes
   # CREATE TABLE lists (id SERIAL, title VARCHAR(50), description VARCHAR(255), iscomplete BOOLEAN, likes INT);
 
     if(ENV['DATABASE_URL'])
@@ -17,6 +17,7 @@ class List
     def initialize(opts = {}, id = nil)
       @id = id.to_i
       @title = opts["title"]
+      @imageURL = opts["imageURL"]
       @description = opts["description"]
       @iscomplete = opts["iscomplete"]
       @likes = opts["likes"].to_i
