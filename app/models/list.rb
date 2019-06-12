@@ -12,7 +12,7 @@ class List
     else
         DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'plan_it_app_api_development'})
     end
-
+# change db name back to bucket-lister-api
     #initialize options Hash
     def initialize(opts = {}, id = nil)
       @id = id.to_i
@@ -72,11 +72,7 @@ class List
     results = DB.exec("SELECT * FROM lists;")
     return results.map do |result|
       # turn completed value into boolean
-      if result["iscomplete"] === 'f'
-        result["iscomplete"] = false
-      else
-        result["iscomplete"] = true
-      end
+
       # create and return the lists
       list = List.new(result, result["id"])
     end
@@ -89,11 +85,7 @@ class List
     p result
     p '---'
     # turn completed value into boolean
-    if result["iscomplete"] === 'f'
-      result["iscomplete"] = false
-    else
-      result["iscomplete"] = true
-    end
+
     p result
     # create and return the task
     list = List.new(result, result["id"])
@@ -102,22 +94,17 @@ class List
   # create one
   def self.create(opts)
     # if opts["completed"] does not exist, default it to false
-    if opts["iscomplete"] === nil
-      opts["iscomplete"] = false
-    end
+  p opts
+  p '==================================='
     # create the task
-    results = DB.exec_prepared("create_list", [opts["title"], opts["iscomplete"]])
+    results = DB.exec_prepared("create_list", [opts["title"], opts["description"], opts["imageURL"], opts["likes"]])
     # turn completed value into boolean
-    if results.first["iscomplete"] === 'f'
-      iscomplete = false
-    else
-      iscomplete = true
-    end
+
     # return the task
     list = List.new(
       {
         "title" => results.first["title"],
-        "iscomplete" => iscomplete
+        # "done" => iscomplete
       },
       results.first["id"]
     )
@@ -138,25 +125,18 @@ class List
   # update one
   def self.update(id, opts)
     # update the list
-    results = DB.exec_prepared("update_list", [id, opts["title"], opts["iscomplete"]])
+    results = DB.exec_prepared("update_list", [id, opts["title"], opts["description"], opts["imageURL"]])
     # if results.first exists, it was successfully updated so return the updated list
-    if results.first
-      if results.first["iscomplete"] === 'f'
-        iscomplete = false
-      else
-        iscomplete = true
-      end
+
       # return the task
       list = List.new(
         {
           "title" => results.first["title"],
-          "iscomplete" => iscomplete
+
         },
         results.first["id"]
       )
-    else # otherwise, alert that update failed
-      return { message: "sorry, cannot find list at id: #{id}", status: 400 }
+
+      return list
     end
   end
-
-end
