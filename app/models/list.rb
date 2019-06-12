@@ -10,7 +10,7 @@ class List
         uri = URI.parse(ENV['DATABASE_URL'])
         DB = PG.connect(uri.hostname, uri.port, nil, nil, uri.path[1..-1], uri.user, uri.password)
     else
-        DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'bucketapi'})
+        DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'bucket-lister-api'})
     end
 # change db name back to bucket-lister-api
     #initialize options Hash
@@ -58,9 +58,9 @@ class List
   DB.prepare("update_list",
     <<-SQL
       UPDATE lists
-      SET title = $2, description = $3, image = $4
+      SET title = $2, description = $3, image = $4, likes = $5
       WHERE id = $1
-      RETURNING id, title, description, image;
+      RETURNING id, title, description, image, likes;
     SQL
   )
 
@@ -133,7 +133,7 @@ class List
           "title" => results.first["title"],
           "description" => results.first["description"],
           "image" => results.first["image"],
-          "likes" => results.first["likes"],
+          "likes" => results.first["likes"]
         },
         results.first["id"]
       )
