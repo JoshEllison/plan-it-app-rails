@@ -3,7 +3,7 @@ class List
  #                      SET UP
  # ==================================================
  # add attribute readers for instance accesss
-  attr_reader :id, :title, :imageURL, :description, :iscomplete, :likes
+  attr_reader :id, :title, :imageURL, :description, :likes, :done
   # CREATE TABLE lists (id SERIAL, title VARCHAR(50), description VARCHAR(255), iscomplete BOOLEAN, likes INT);
 
     if(ENV['DATABASE_URL'])
