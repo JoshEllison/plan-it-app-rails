@@ -115,11 +115,9 @@ class List
     # delete one
     results = DB.exec_prepared("delete_list", [id])
     # if results.first exists, it successfully deleted
-    if results.first
-      return { deleted: true }
-    else # otherwise it didn't, so leave a message that the delete was not successful
-      return { message: "sorry cannot find person at id: #{id}", status: 400}
-    end
+    results.first
+    return { deleted: true }
+
   end
 
   # update one
