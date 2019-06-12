@@ -72,11 +72,7 @@ class List
     results = DB.exec("SELECT * FROM lists;")
     return results.map do |result|
       # turn completed value into boolean
-      if result["iscomplete"] === 'f'
-        result["iscomplete"] = false
-      else
-        result["iscomplete"] = true
-      end
+
       # create and return the lists
       list = List.new(result, result["id"])
     end
@@ -89,11 +85,7 @@ class List
     p result
     p '---'
     # turn completed value into boolean
-    if result["iscomplete"] === 'f'
-      result["iscomplete"] = false
-    else
-      result["iscomplete"] = true
-    end
+
     p result
     # create and return the task
     list = List.new(result, result["id"])
@@ -133,19 +125,14 @@ class List
   # update one
   def self.update(id, opts)
     # update the list
-    results = DB.exec_prepared("update_list", [id, opts["title"], opts["iscomplete"]])
+    results = DB.exec_prepared("update_list", [id, opts["title"], opts["description"], opts["imageURL"]])
     # if results.first exists, it was successfully updated so return the updated list
-    if results.first
-      if results.first["iscomplete"] === 'f'
-        iscomplete = false
-      else
-        iscomplete = true
-      end
+
       # return the task
       list = List.new(
         {
           "title" => results.first["title"],
-          "iscomplete" => iscomplete
+        
         },
         results.first["id"]
       )
