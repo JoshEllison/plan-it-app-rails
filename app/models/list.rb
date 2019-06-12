@@ -3,8 +3,8 @@ class List
  #                      SET UP
  # ==================================================
  # add attribute readers for instance accesss
-  attr_reader :id, :title, :imageURL, :description, :likes, :done
-  # CREATE TABLE lists (id SERIAL, title VARCHAR(50), description VARCHAR(255), iscomplete BOOLEAN, likes INT);
+  attr_reader :id, :title, :imageurl, :description, :done, :likes
+  # CREATE TABLE lists (id SERIAL, title VARCHAR(50), description VARCHAR(255), done INT, likes INT);
 
     if(ENV['DATABASE_URL'])
         uri = URI.parse(ENV['DATABASE_URL'])
@@ -17,9 +17,9 @@ class List
     def initialize(opts = {}, id = nil)
       @id = id.to_i
       @title = opts["title"]
-      @imageURL = opts["imageURL"]
+      @imageurl = opts["imageurl"]
       @description = opts["description"]
-      @iscomplete = opts["iscomplete"]
+      @done = opts["done"].to_i
       @likes = opts["likes"].to_i
     end
 
@@ -39,9 +39,9 @@ class List
   # create task
   DB.prepare("create_list",
     <<-SQL
-      INSERT INTO lists (title, iscomplete)
-      VALUES ( $1, $2 )
-      RETURNING id, title, iscomplete;
+      INSERT INTO lists (title, description, imageurl, likes)
+      VALUES ( $1, $2, $3, $4 )
+      RETURNING id, title, description, imageurl, likes, done;
     SQL
   )
 
@@ -58,9 +58,9 @@ class List
   DB.prepare("update_list",
     <<-SQL
       UPDATE lists
-      SET title = $2, iscomplete = $3
+      SET title = $2, description = $3, imageurl = $4
       WHERE id = $1
-      RETURNING id, title, iscomplete;
+      RETURNING id, title, description, imageurl;
     SQL
   )
 
@@ -123,7 +123,7 @@ class List
   # update one
   def self.update(id, opts)
     # update the list
-    results = DB.exec_prepared("update_list", [id, opts["title"], opts["description"], opts["imageURL"], opts["likes"]])
+    results = DB.exec_prepared("update_list", [id, opts["title"], opts["description"], opts["imageurl"], opts["likes"]])
     # if results.first exists, it was successfully updated so return the updated list
 
       # return the task
@@ -131,12 +131,12 @@ class List
         {
           "title" => results.first["title"],
           "description" => results.first["description"],
-          "imageURL" => results.first["imageURL"],
-          "likes" => results.first["likes"]
+          "imageurl" => results.first["imageurl"],
+          "likes" => results.first["likes"],
         },
         results.first["id"]
       )
 
       return list
-
+    end
   end
