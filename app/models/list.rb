@@ -3,14 +3,14 @@ class List
  #                      SET UP
  # ==================================================
  # add attribute readers for instance accesss
-  attr_reader :id, :title, :imageURL, :description, :done, :likes
-  # CREATE TABLE lists (id SERIAL, title VARCHAR(50), description VARCHAR(255), done INT, likes INT);
+  attr_reader :id, :title, :imageURL, :description, :iscomplete, :likes
+  # CREATE TABLE lists (id SERIAL, title VARCHAR(50), description VARCHAR(255), iscomplete BOOLEAN, likes INT);
 
     if(ENV['DATABASE_URL'])
         uri = URI.parse(ENV['DATABASE_URL'])
         DB = PG.connect(uri.hostname, uri.port, nil, nil, uri.path[1..-1], uri.user, uri.password)
     else
-        DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'bucketapi'})
+        DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'plan_it_app_api_development'})
     end
 
     #initialize options Hash
@@ -19,7 +19,7 @@ class List
       @title = opts["title"]
       @imageURL = opts["imageURL"]
       @description = opts["description"]
-      @done = opts["done"].to_i
+      @iscomplete = opts["iscomplete"]
       @likes = opts["likes"].to_i
     end
 
@@ -39,9 +39,9 @@ class List
   # create task
   DB.prepare("create_list",
     <<-SQL
-      INSERT INTO lists (title, description, imageURL, likes)
-      VALUES ( $1, $2, $3, $4 )
-      RETURNING id, title, description, imageURL, likes, done;
+      INSERT INTO lists (title, iscomplete)
+      VALUES ( $1, $2 )
+      RETURNING id, title, iscomplete;
     SQL
   )
 
@@ -58,9 +58,9 @@ class List
   DB.prepare("update_list",
     <<-SQL
       UPDATE lists
-      SET title = $2, description = $3, imageURL = $4
+      SET title = $2, iscomplete = $3
       WHERE id = $1
-      RETURNING id, title, description, imageURL;
+      RETURNING id, title, iscomplete;
     SQL
   )
 
