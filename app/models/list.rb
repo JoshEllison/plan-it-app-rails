@@ -10,9 +10,9 @@ class List
         uri = URI.parse(ENV['DATABASE_URL'])
         DB = PG.connect(uri.hostname, uri.port, nil, nil, uri.path[1..-1], uri.user, uri.password)
     else
-        DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'bucketapi'})
+        DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'plan_it_app_api_development'})
     end
-
+# change db name back to bucket-lister-api
     #initialize options Hash
     def initialize(opts = {}, id = nil)
       @id = id.to_i
@@ -102,22 +102,17 @@ class List
   # create one
   def self.create(opts)
     # if opts["completed"] does not exist, default it to false
-    if opts["iscomplete"] === nil
-      opts["iscomplete"] = false
-    end
+  p opts
+  p '==================================='
     # create the task
-    results = DB.exec_prepared("create_list", [opts["title"], opts["iscomplete"]])
+    results = DB.exec_prepared("create_list", [opts["title"], opts["description"], opts["imageURL"], opts["likes"]])
     # turn completed value into boolean
-    if results.first["iscomplete"] === 'f'
-      iscomplete = false
-    else
-      iscomplete = true
-    end
+
     # return the task
     list = List.new(
       {
         "title" => results.first["title"],
-        "iscomplete" => iscomplete
+        # "done" => iscomplete
       },
       results.first["id"]
     )
