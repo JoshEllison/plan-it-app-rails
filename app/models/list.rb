@@ -125,18 +125,20 @@ class List
   # update one
   def self.update(id, opts)
     # update the list
-    results = DB.exec_prepared("update_list", [id, opts["title"], opts["description"], opts["imageURL"]])
+    results = DB.exec_prepared("update_list", [id, opts["title"], opts["description"], opts["imageURL"], opts["likes"]])
     # if results.first exists, it was successfully updated so return the updated list
 
       # return the task
       list = List.new(
         {
           "title" => results.first["title"],
-
+          "description" => results.first["description"],
+          "imageURL" => results.first["imageURL"],
+          "likes" => results.first["likes"]
         },
         results.first["id"]
       )
 
       return list
-    end
+
   end
