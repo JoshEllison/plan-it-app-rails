@@ -132,11 +132,11 @@ class List
       list = List.new(
         {
           "title" => results.first["title"],
-        
+
         },
         results.first["id"]
       )
-    else # otherwise, alert that update failed
+   otherwise, alert that update failed
       return { message: "sorry, cannot find list at id: #{id}", status: 400 }
     end
   end
