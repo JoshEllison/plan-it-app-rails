@@ -136,7 +136,7 @@ class List
         },
         results.first["id"]
       )
-   otherwise, alert that update failed
+  
       return { message: "sorry, cannot find list at id: #{id}", status: 400 }
     end
   end
