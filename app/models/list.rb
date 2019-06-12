@@ -135,6 +135,6 @@ class List
         results.first["id"]
       )
 
-      return list
-    end
+    return list
   end
+end
