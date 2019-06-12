@@ -137,6 +137,6 @@ class List
         results.first["id"]
       )
 
-      return { message: "sorry, cannot find list at id: #{id}", status: 400 }
+      return list
     end
   end
